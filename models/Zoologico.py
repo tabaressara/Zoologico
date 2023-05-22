@@ -1,24 +1,53 @@
+import streamlit as st
 class Zoo:
     def __init__(self):
-        self.habitats = []
-        self.registro = []
-        self.dietas = {"carnivoro": [], "herbivoro": [], "omnivoro": []}
 
-    def animal_registro(self, animal):
-        self.registro.append(animal)
-
-    def agregar_habitat(self, habitat):
-        self.habitats.append(habitat)
-        return
-
-    def eliminar_animal(self, animal):
-        self.registro.remove(animal)
-
-    def listarHabitats(self):
-        if self.habitats:
-            for habitat in self.habitats:
-                habitat.listar_animales()
+        if "dietas" in st.session_state:
+            self.dietas = st.session_state["dietas"]
         else:
-            print("No hay hábitats en el zoológico.")
+            self.dietas = {"carnivoro": [], "herbivoro": [], "omnivoro": []}
 
+        if "habitats" in st.session_state:
+            self.habitats = st.session_state["habitats"]
+        else:
+            self.habitats = []
+            st.session_state["habitats"] = []
 
+        if "registro" in st.session_state:
+            self.registro = st.session_state["registro"]
+        else:
+            self.registro = []
+            st.session_state["registro"] = []
+
+        self.nombreHabitats = ["Desertico", "Acuatico", "Selvatico", "Polar"]
+
+    def agregarHabitat(self, habitat):
+        self.habitats.append(habitat)
+        st.session_state["habitats"] = self.habitats
+
+    def agregarAnimal(self, animal):
+        self.registro.append(animal)
+        st.session_state["registro"] = self.registro
+
+    def eliminarAnimal(self, animal):
+        self.registro.remove(animal)
+        st.session_state["registro"] = self.registro
+
+    def alimentoPermitido(self, alimento, tipo):
+        for i in range(len(self.dietas[tipo])):
+            if self.dietas[tipo][i] == alimento:
+                return i
+        return -1
+
+    def agregarAlimento(self, alimento, tipo):
+        self.dietas[tipo].append(alimento)
+        st.session_state["dietas"] = self.dietas
+
+    def eliminarAlimento(self, alimento, tipo):
+        self.dietas[tipo].remove(alimento)
+        st.session_state["dietas"] = self.dietas
+
+    def repetidos(self, nombre):
+        for habitat in self.habitats:
+            if nombre == habitat.nombre:
+                return True
