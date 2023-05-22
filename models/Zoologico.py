@@ -6,7 +6,6 @@ class Zoo:
 
     def animal_registro(self, animal):
         self.registro.append(animal)
-        return
 
     def agregar_habitat(self, habitat):
         self.habitats.append(habitat)

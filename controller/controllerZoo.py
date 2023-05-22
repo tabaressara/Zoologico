@@ -25,18 +25,8 @@ class controllerZoo():
             self.eliminarAlimento()
 
     def crearAnimal(self):
-        id = int(self.vista.solicitar_dato("ingrese el id del animal"))
-        nombre = self.vista.solicitar_dato("ingrese el nombre del animal")
-        especie = self.vista.solicitar_dato("ingrese la especie del animal")
-        edad = int(self.vista.solicitar_dato("ingrese la edad del animal"))
-        dieta = self.vista.solicitar_dato("ingrese la dieta del animal")
-        salud = int(self.vista.solicitar_dato("ingrese la salud del animal"))
-        hDormir = int(self.vista.solicitar_dato("ingrese las horas de sueño del animal"))
-        cantidad = int(self.vista.solicitar_dato("ingrese la cantidad de comida del animal"))
-        temperatura = int(self.vista.solicitar_dato("ingrese la temperatura del animal"))
-
-        nuevo = animalModel.Animal(id, nombre, especie, edad, dieta, salud, hDormir, cantidad, temperatura)
-        zoologicoModel.animal_registro(nuevo)
+        animal = self.vista.menu_crear_animal()
+        self.modelo.animal_registro(animal)
 
     def crearHabitat(self):
         print("escoge un habitat para crear")
