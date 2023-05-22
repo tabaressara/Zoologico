@@ -6,9 +6,11 @@ class Zoo:
 
     def animal_registro(self, animal):
         self.registro.append(animal)
+        return
 
     def agregar_habitat(self, habitat):
         self.habitats.append(habitat)
+        return
 
     def eliminar_animal(self, animal):
         self.registro.remove(animal)
@@ -19,3 +21,5 @@ class Zoo:
                 habitat.listar_animales()
         else:
             print("No hay hábitats en el zoológico.")
+
+

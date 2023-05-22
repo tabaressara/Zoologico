@@ -27,24 +27,24 @@ class Habitat:
 
 class Desertico(Habitat):
     def __init__(self, id, nombre, capacidad, temperaturaMax, temperaturaMin, oasis, captus):
-        super().__init__(self, id, nombre, capacidad, temperaturaMax, temperaturaMin)
+        super().__init__(id, nombre, capacidad, temperaturaMax, temperaturaMin)
         self.oasis = oasis
         self.captus = captus
 
 class Acuatico(Habitat):
     def __init__(self, id, nombre, capacidad, temperaturaMax, temperaturaMin, corales, profundidad):
-        super().__init__(self, id, nombre, capacidad, temperaturaMax, temperaturaMin)
+        super().__init__(id, nombre, capacidad, temperaturaMax, temperaturaMin)
         self.corales = corales
         self.profundidad = profundidad
 
 class Selvatico(Habitat):
     def __init__(self, id, nombre, capacidad, temperaturaMax, temperaturaMin, rocas, lianas):
-        super().__init__(self, id, nombre, capacidad, temperaturaMax, temperaturaMin)
+        super().__init__(id, nombre, capacidad, temperaturaMax, temperaturaMin)
         self.rocas = rocas
         self.lianas = lianas
 
 class Polar(Habitat):
     def __init__(self, id, nombre, capacidad, temperaturaMax, temperaturaMin, hielo, iceberg):
-        super().__init__(self, id, nombre, capacidad, temperaturaMax, temperaturaMin)
+        super().__init__(id, nombre, capacidad, temperaturaMax, temperaturaMin)
         self.hielo = hielo
         self.iceberg = iceberg
