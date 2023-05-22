@@ -21,7 +21,7 @@ class controllerZoo():
         elif opcion == 6:
             self.agregarAlimento()
         elif opcion == 7:
-            self.EliminarAlimento()
+            self.eliminarAlimento()
 
     def crearAnimal(self):
         id = int(self.vista.solicitar_dato("ingrese el id del animal"))
@@ -91,3 +91,74 @@ class controllerZoo():
 
         self.modelo.agregarAnimal(animal)
         self.modelo.eliminar_animal(animal)
+
+    def listar(self):
+        self.modelo.listarHabitats()
+
+    def realizarAccion(self):
+        nombreA = self.vista.solicitar_dato("Ingrese nombre del animal: ")
+        animal = next((a for a in self.modelo.registro if a.nombre == nombreA), None)
+
+        print("Va a realizar una accion")
+        print("1) comer")
+        print("2) dormir")
+        print("3) jugar")
+        opcion = int(self.vista.solicitar_dato("escoja una opcion: "))
+
+        if opcion == 1:
+            tipo = animal.dieta
+            alimento = self.vista.solicitar_dato("ingrese el nombre del alimento")
+            cantidadC = int(self.vista.solicitar_dato("ingrese la cantidad de alimento"))
+
+            if alimento in self.modelo.dietas[tipo]:
+                if animal.comido + cantidadC <= animal.cantidad:
+                    print(f"{animal.nombre} ha comido {cantidadC} de {alimento}.")
+                    animal.comido += cantidadC
+                else:
+                    print(f"{animal.nombre} no puede comer tanta comida")
+            else:
+                print(f"{animal.nombre} no puede comer {alimento}.")
+
+        elif opcion == 2:
+            tiempo = int(self.vista.solicitar_dato("ingrese el tiempo que va a dormir el animal"))
+
+            if tiempo < 0:
+                print("El número de horas de sueño debe ser mayor o igual a cero.")
+
+            elif tiempo > animal.hDormir:
+                print(f"El tiempo máximo de sueño para {animal.nombre} es de {animal.hDormir} horas.")
+
+            else:
+                if animal.sueno + tiempo <= animal.hDormir:
+                    print(f"{animal.nombre} ha dormido durante {tiempo} horas.")
+                    animal.sueno += tiempo
+                else:
+                    print(f"{animal.nombre} no puede dormir tanto tiempo")
+
+        elif opcion == 3:
+            if animal.jugado:
+                print(f"{animal.nombre} ya jugó hoy.")
+            else:
+                print(f"{animal.nombre} está jugando.")
+                animal.jugado = True
+
+        else:
+            print("Acción no válida.")
+
+    def agregarAlimento(self):
+        alimento = self.vista.solicitar_dato("ingrese el nombre del alimento")
+        tipo = self.vista.solicitar_dato("ingrese el nombre de la dieta")
+        if tipo in self.modelo.dietas:
+            self.modelo.dietas[tipo].append(alimento)
+            print(f"Se ha agregado {alimento} al tipo de alimentación {tipo}")
+        else:
+            print(f"No se reconoce el tipo de alimentación {tipo}")
+
+    def eliminarAlimento(self):
+        alimento = self.vista.solicitar_dato("ingrese el nombre del alimento")
+        tipo = self.vista.solicitar_dato("ingrese el nombre de la dieta")
+        if tipo in self.modelo.dietas and alimento in self.modelo.dietas[tipo]:
+            self.modelo.dietas[tipo].remove(alimento)
+            print(f"Se ha eliminado {alimento} del tipo de alimentación {tipo}")
+        else:
+            print(f"No se encontró {alimento} en el tipo de alimentación {tipo}")

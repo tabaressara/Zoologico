@@ -5,5 +5,8 @@ import controller.controllerZoo as zooController
 
 class vistaZoo():
 
+    def __init__(self):
+        self.nuevo = zoologicoModel.Zoo()
+        self.control = zooController.controllerZoo(self.nuevo, self)
     def solicitar_dato(self, mensaje):
         return input(mensaje)

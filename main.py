@@ -1,5 +1,4 @@
-import streamlit as st
-
+import view.zooView as viewZoo
 
 if __name__ == '__main__':
-    st.header("zoologico")
+    sara = viewZoo.vistaZoo()
