@@ -62,12 +62,12 @@ class controllerZoo():
         self.vista.menu_añadir_animal()
 
     def listar(self):
-        print("bien")
+        self.vista.listar()
     def realizarAccion(self):
         print("bien")
 
     def agregarAlimento(self):
-        print("bien")
+        self.vista.menu_añadir_alimento()
 
     def eliminarAlimento(self):
-        print("bien")
+        self.vista.menu_eliminar_alimento()
