@@ -135,31 +135,63 @@ class vistaZoo():
 
     def menu_añadir_animal(self):
 
-        animalOpcion = [f"Nombre: {animal.nombre}, Especie: {animal.especie}" for animal in self.modelZoo.registro]
+        animalOpcion = []
+        habitatOpcion = []
+        for animal in self.modelZoo.registro:
+            agrega = animal.nombre + " - " + animal.especie + " - " + str(animal.temperatura)
+            animalOpcion.append(agrega)
+
+        for habitat in self.modelZoo.habitats:
+            agregar = habitat.nombre + " - " + str(habitat.capacidad) + " - " + str(
+                int(habitat.temperaturaMax)) + " - " + str(int(habitat.temperaturaMin))
+            habitatOpcion.append(agregar)
 
         with st.container():
-            st.subheader("Animal que agregaras a un habitat")
+            st.subheader("Animal que agregarás a un hábitat")
             if len(self.modelZoo.registro) == 0:
-                st.error("No hay animales en el zoologico")
+                st.error("No hay animales en el zoológico")
             elif len(self.modelZoo.habitats) == 0:
-                st.error("No hay habitats en el zoologico")
+                st.error("No hay hábitats en el zoológico")
             else:
                 animalD = st.selectbox("Escoja un animal", animalOpcion)
-                habitatD = st.selectbox("Escoja un habitat", self.modelZoo.habitats)
+                habitat_index = st.selectbox("Escoja un hábitat", range(len(habitatOpcion)))
 
-                if habitatD.temperaturaMax < animalD.temperatura or habitatD.temperaturaMin > animalD.temperatura:
-                    self.mensajeError("El animal no puede vivir en este habitat")
+                habitatD = self.modelZoo.habitats[habitat_index]
+
+                if habitatD.temperaturaMax < int(animalD.split(" - ")[-1]) or habitatD.temperaturaMin > int(
+                        animalD.split(" - ")[-1]):
+                    self.mensajeError("El animal no puede vivir en este hábitat")
                 elif habitatD.capacidad == len(habitatD.animales):
-                    self.mensajeError("No hay espcio en el habitat")
+                    self.mensajeError("No hay espacio en el hábitat")
                 else:
-                    boton_accion = st.button("Añadir animal a habitat ")
+                    boton_accion = st.button("Añadir animal a hábitat")
 
                     if boton_accion:
                         habitatD.agregarAnimal(animalD)
                         self.modelZoo.eliminarAnimal(animalD)
-                        self.mensajeExitoso("Se agrego el animal a un habitat")
+                        self.mensajeExitoso("Se agregó el animal a un hábitat")
 
+    def listar(self):
+        with st.container():
+            st.subheader("Lista Habitats Y animales")
+            if len(self.modelZoo.habitats) == 0:
+                st.error("No hay habitats en el zoologico")
+            else:
+                nombreH = []
+                for habitat in self.modelZoo.habitats:
+                    opcion = habitat.nombre + " - " + habitat.capacidad
+                    nombreH.append(opcion)
 
+                habitat = st.selectbox("Selecciona el habitat a listar", nombreH)
+
+                animalesD = self.modelZoo.habitats[nombreH.index(habitat)].animales
+
+                if len(animalesD) == 0:
+                    st.error("No hay animales en este habitat")
+                else:
+                    botonListar = st.button("Listar animales")
+                    if botonListar:
+                        st.success("bien")
 
 
     def mensajeExitoso(self, mensaje):
