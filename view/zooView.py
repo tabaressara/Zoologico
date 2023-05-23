@@ -29,19 +29,19 @@ class vistaZoo():
             botonHabitat = st.button("Agregar Habitat", key="botonAgregarHabitat")
         with tab3:
             st.header("Agregar animal a habitat del zoologico")
-            botonAnimalH = st.button("Agregar animal", key="botonAgregarAnimalHabitat")
+            botonAnimalH = st.button("Agregar animal a habitat", key="botonAgregarAnimalHabitat")
         with tab4:
             st.header("Listar habitats y animales")
-            botonListar = st.button("Agregar animal", key="botonListar")
+            botonListar = st.button("Listar", key="botonListar")
         with tab5:
             st.header("Realizar accion")
-            botonAccion = st.button("Agregar animal", key="botonAccion")
+            botonAccion = st.button("Realizar accion", key="botonAccion")
         with tab6:
             st.header("Agregar alimento a dieta")
-            botonAlimento = st.button("Agregar animal", key="botonAgregarAlimento")
+            botonAlimento = st.button("Agregar alimento", key="botonAgregarAlimento")
         with tab7:
             st.header("Eliminar alimento de dieta")
-            botonQuitar = st.button("Agregar animal", key="botonEliminarAlimento")
+            botonQuitar = st.button("Eliminar alimento", key="botonEliminarAlimento")
 
         if botonAgregar:
             st.session_state["opcion"] = 1
@@ -95,21 +95,25 @@ class vistaZoo():
             capacidad = st.number_input("Ingrese la capacidad del habitat")
 
             if nombre == "Desertico":
+                id = 1
                 temperaturaMax = 60
                 temperaturaMin = 41
                 oasis = st.number_input("Ingrese el numero de oasis en el habitat")
                 captus = st.number_input("Ingrese el numero de captus en el habitat")
             elif nombre == "Acuatico":
+                id = 2
                 temperaturaMax = 0
                 temperaturaMin = 20
                 corales = st.number_input("Ingrese el numero de corales en el habitat")
                 profundidad = st.number_input("Ingrese la profundidad del habitat")
             elif nombre == "Selvatico":
+                id = 3
                 temperaturaMax = 40
                 temperaturaMin = 21
                 rocas = st.number_input("Ingrese el numero de rocas en el habitat")
                 lianas = st.number_input("Ingrese el numero de lianas en el habitat")
             elif nombre =="Polar":
+                id = 4
                 temperaturaMax = -1
                 temperaturaMin = -20
                 hielo = st.number_input("Ingrese la cantidad de hielo del habitat")
@@ -122,27 +126,43 @@ class vistaZoo():
                     self.mensajeError("Ya hay un habitat")
                 else:
                     if nombre == "Desertico":
-                        nuevo = habitatModel.Desertico(nombre, capacidad, temperaturaMax, temperaturaMin, oasis, captus)
+                        nuevo = habitatModel.Desertico(id, nombre, capacidad, temperaturaMax, temperaturaMin, oasis, captus)
                     elif nombre == "Acuatico":
-                        nuevo = habitatModel.Acuatico(nombre, capacidad, temperaturaMax, temperaturaMin, corales, profundidad)
+                        nuevo = habitatModel.Acuatico(id, nombre, capacidad, temperaturaMax, temperaturaMin, corales, profundidad)
                     elif nombre == "Selvatico":
-                        nuevo = habitatModel.Selvatico(nombre, capacidad, temperaturaMax, temperaturaMin, rocas, lianas)
+                        nuevo = habitatModel.Selvatico(id, nombre, capacidad, temperaturaMax, temperaturaMin, rocas, lianas)
                     elif nombre == "Polar":
-                        nuevo = habitatModel.Polar(nombre, capacidad, temperaturaMax, temperaturaMin, hielo, iceberg)
+                        nuevo = habitatModel.Polar(id, nombre, capacidad, temperaturaMax, temperaturaMin, hielo, iceberg)
 
                     st.success("El habitat fue creado")
                     return nuevo
 
     def menu_añadir_animal(self):
 
+        posiblesH = []
+        for habitat in self.modelZoo.habitats:
+                posiblesH.append(habitat.nombre)
+
         with st.container():
-            st.subheader("Animal que agregarás a un hábitat")
+            st.subheader("Añadir animal a un habitat")
             if len(self.modelZoo.registro) == 0:
-                st.error("No hay animales en el zoológico")
-            elif len(self.modelZoo.habitats) == 0:
-                st.error("No hay hábitats en el zoológico")
+                self.mensajeError("No hay animales")
             else:
-                return
+                listaA = self.modelZoo.listarAnimales()
+                probable = st.selectbox("Elija un animal", listaA)
+                elegido = self.modelZoo.registro[listaA.index(probable)]
+
+                if len(posiblesH) == 0:
+                    self.mensajeError("No hay habitats")
+                else:
+                    probableH = st.selectbox("Elija un habitat", posiblesH)
+                    elegidoH = self.modelZoo.listarHabitats(habitat.nombre)
+
+                    boton_accion = st.button("Agregar animal a habitat")
+                    if boton_accion:
+                        elegidoH.agregarAnimalH(elegido)
+                        self.modelZoo.eliminarAnimal(elegido)
+                        self.mensajeExitoso("Animal agregado al habitat con exito")
 
     def listar(self):
 
@@ -160,11 +180,65 @@ class vistaZoo():
                 animalesD = self.modelZoo.habitats[nombreH.index(habitat)].animales
 
                 if len(animalesD) == 0:
-                    st.error("No hay animales en este habitat")
+                    self.mensajeError("No hay animales en este habitat")
                 else:
-                    botonListar = st.button("Listar animales")
-                    if botonListar:
-                        st.success("bien")
+                    boton_accion = st.button("Listar animales")
+                    if boton_accion:
+                        for animal in animalesD:
+                            st.write(f"ID: {animal.id}")
+                            st.write(f"Nombre: {animal.nombre}")
+                            st.write(f"Especie: {animal.especie}")
+                            st.write(f"Edad: {animal.edad}")
+                            st.write(f"Dieta: {animal.dieta}")
+                            st.write(f"Salud: {animal.salud}")
+                            st.divider()
+
+    def menu_realizar_accion(self):
+
+        contiene = True
+        for habitat in self.modelZoo.habitats:
+            if len(habitat.animales) == 0:
+                contiene = False
+
+        if contiene:
+             with st.container():
+                st.subheader("Realizar accion")
+                opciones = self.modelZoo.animalesHabitats()
+                identificador = st.selectbox("Selecciona un animal: ", opciones)
+                escogido = self.modelZoo.buscar(identificador)
+
+                accion = st.selectbox("Seleccione una accion: ", "Dormir", "Comer", "Jugar")
+
+                if accion == "Dormir":
+                    horas = st.number_input("Ingrese las horas que duerme el animal")
+                    if horas < 0:
+                        self.mensajeError("Las horas deben ser mayores a 0")
+                    elif horas > escogido.sueno:
+                        self.mensajeError("Se pasa de las horas permitidas")
+                    else:
+                        boton_accion = st.button("Dormir")
+                        if boton_accion:
+                            if escogido.sueno + horas <= escogido.hDormir:
+                                self.mensajeExitoso("El animal duerme")
+                                escogido.sueno += horas
+                            else:
+                                self.mensajeError("No puede dormir tanto")
+                elif accion == "Comer":
+                    st.selectbox("Seleccione un alimento: ", self.modelZoo.dietas[escogido.dieta])
+                    boton_accion = st.button("Comer")
+                    if boton_accion:
+                        self.mensajeExitoso("El animal esta Comiendo")
+
+                elif accion == "Jugar":
+                    if escogido.jugado:
+                        self.mensajeError("El animal ya jugo hoy")
+                    else:
+                        boton_accion = st.button("Jugar")
+                        if boton_accion:
+                            self.mensajeExitoso("El animal esta jugando")
+                            escogido.jugado = False
+
+
 
     def menu_añadir_alimento(self):
 

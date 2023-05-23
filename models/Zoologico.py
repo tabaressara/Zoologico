@@ -51,3 +51,28 @@ class Zoo:
         for habitat in self.habitats:
             if nombre == habitat.nombre:
                 return True
+
+    def listarHabitats(self, nombre):
+        for habitat in self.habitats:
+            if habitat.nombre == nombre:
+                return habitat
+
+    def listarAnimales(self):
+        nombre = []
+        for animal in self.registro:
+            agregar = animal.nombre + " - " + animal.especie
+            nombre.append(agregar)
+        return nombre
+
+    def animalesHabitats(self):
+        lista = []
+        for habitat in self.habitats:
+            for animal in habitat.animales:
+                lista.append(animal.id)
+        return lista
+
+    def buscar(self, id):
+        for habitat in self.habitats:
+            for animal in habitat.animales:
+                if animal.id == id:
+                    return animal
