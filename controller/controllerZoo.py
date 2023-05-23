@@ -1,8 +1,3 @@
-import models.Habitat as habitatModel
-import models.Animal as animalModel
-import models.Zoologico as zoologicoModel
-import streamlit as st
-
 
 class controllerZoo():
     def __init__(self, modelo, vista):
@@ -55,13 +50,11 @@ class controllerZoo():
         nuevo = self.vista.menu_crear_animal()
         if nuevo:
             self.modelo.agregarAnimal(nuevo)
-            return True
 
     def crearHabitat(self):
         nuevo = self.vista.menu_crear_habitat()
         if nuevo:
             self.modelo.agregarHabitat(nuevo)
-            return True
 
     def añadirAnimal(self):
         self.vista.menu_añadir_animal()

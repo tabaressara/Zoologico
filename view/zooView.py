@@ -45,7 +45,7 @@ class vistaZoo():
             botonQuitar = st.button("Eliminar alimento", key="botonEliminarAlimento")
         with tab8:
             st.header("Mostrar API")
-            botonMostrar = st.button("Eliminar alimento", key="botonMostrar")
+            botonMostrar = st.button("Mostrar API", key="botonMostrar")
 
         if botonAgregar:
             st.session_state["opcion"] = 1
@@ -67,9 +67,6 @@ class vistaZoo():
         if "opcion" in st.session_state:
             self.control.menu(st.session_state["opcion"])
 
-    def solicitar_dato(self, mensaje):
-        return input(mensaje)
-
     def menu_crear_animal(self):
 
         with st.container():
@@ -77,58 +74,70 @@ class vistaZoo():
             id = st.text_input("Ingrese el numero de identificacion del animal:")
             nombre = st.text_input("Ingrese el nombre del animal")
             especie = st.text_input("Ingrese la especie del animal")
-            edad = st.number_input("Ingrese la edad del animal")
-            salud = st.number_input("Ingrese la salud del animal")
-            temperatura = st.number_input("Ingrese la temperatura del animal")
-            hDormir = st.number_input("Ingrese las horas de sueño del animal")
-            cantidad = st.number_input("Ingrese la cantidad de comida del animal")
+            edad = st.slider("Ingrese la edad del animal", 0, 100)
+            salud = st.slider("Ingrese la salud del animal", 0, 10)
+            temperatura = st.slider("Ingrese la temperatura del animal", -20, 60)
+            hDormir = st.slider("Ingrese las horas de sueño del animal", 0, 24)
+            cantidad = st.slider("Ingrese la cantidad de comida del animal", 0, 20)
             dieta = st.selectbox("Seleccione la dieta del animal", self.modelZoo.dietas)
             boton_accion = st.button("Crear animal ")
+
+            repetido = 1
+            for animal in self.modelZoo.registro:
+                if animal.id == id:
+                    repetido = 0
 
         if boton_accion:
             if not id.isnumeric():
                 raise ValueError("El ID debe ser un valor numérico")
-
-            nuevoA = animalModel.Animal(id, nombre, especie, edad, dieta, salud, hDormir, cantidad, temperatura)
-            st.success("El animal fue creado con exito")
-            return nuevoA
+            elif repetido == 0:
+                self.mensajeError("Ya existe un animal con ese ID")
+            else:
+                nuevoA = animalModel.Animal(id, nombre, especie, edad, dieta, salud, hDormir, cantidad, temperatura)
+                st.success("El animal fue creado con exito")
+                return nuevoA
 
     def menu_crear_habitat(self):
 
         with st.container():
             st.subheader("Ingrese todos los datos del Habitat")
             nombre = st.selectbox("Elige el nombre del habitat", self.modelZoo.nombreHabitats)
-            capacidad = st.number_input("Ingrese la capacidad del habitat")
+            capacidad = st.slider("Ingrese la capacidad del habitat", 0, 50)
 
             if nombre == "Desertico":
                 id = 1
                 temperaturaMax = 60
                 temperaturaMin = 41
-                oasis = st.number_input("Ingrese el numero de oasis en el habitat")
-                captus = st.number_input("Ingrese el numero de captus en el habitat")
+                oasis = st.slider("Ingrese el numero de oasis en el habitat", 0, 100)
+                captus = st.slider("Ingrese el numero de captus en el habitat", 0, 100)
             elif nombre == "Acuatico":
                 id = 2
                 temperaturaMax = 0
                 temperaturaMin = 20
-                corales = st.number_input("Ingrese el numero de corales en el habitat")
-                profundidad = st.number_input("Ingrese la profundidad del habitat")
+                corales = st.slider("Ingrese el numero de corales en el habitat", 0, 100)
+                profundidad = st.slider("Ingrese la profundidad del habitat", 0, 100)
             elif nombre == "Selvatico":
                 id = 3
                 temperaturaMax = 40
                 temperaturaMin = 21
-                rocas = st.number_input("Ingrese el numero de rocas en el habitat")
-                lianas = st.number_input("Ingrese el numero de lianas en el habitat")
+                rocas = st.slider("Ingrese el numero de rocas en el habitat", 0, 100)
+                lianas = st.slider("Ingrese el numero de lianas en el habitat", 0, 100)
             elif nombre =="Polar":
                 id = 4
                 temperaturaMax = -1
                 temperaturaMin = -20
-                hielo = st.number_input("Ingrese la cantidad de hielo del habitat")
-                iceberg = st.number_input("Ingrese el numero de icebergs en el habitat")
+                hielo = st.slider("Ingrese la cantidad de hielo del habitat", 0, 100)
+                iceberg = st.slider("Ingrese el numero de icebergs en el habitat", 0, 100)
 
-            boton_accion = st.button("Crear animal ")
+            boton_accion = st.button("Crear habitat ")
+
+            repetido = 1
+            for habitat in self.modelZoo.habitats:
+                if nombre == habitat.nombre:
+                    repetido = 0
 
             if boton_accion:
-                if self.modelZoo.repetidos(nombre):
+                if repetido == 0:
                     self.mensajeError("Ya hay un habitat")
                 else:
                     if nombre == "Desertico":
@@ -142,6 +151,8 @@ class vistaZoo():
 
                     st.success("El habitat fue creado")
                     return nuevo
+
+
 
     def menu_añadir_animal(self):
 
@@ -161,7 +172,7 @@ class vistaZoo():
                 if len(posiblesH) == 0:
                     self.mensajeError("No hay habitats")
                 else:
-                    probableH = st.selectbox("Elija un habitat", posiblesH)
+                    st.selectbox("Elija un habitat", posiblesH)
                     elegidoH = self.modelZoo.listarHabitats(habitat.nombre)
 
                     boton_accion = st.button("Agregar animal a habitat")
@@ -182,15 +193,19 @@ class vistaZoo():
             if len(self.modelZoo.habitats) == 0:
                 st.error("No hay habitats en el zoologico")
             else:
-                habitat = st.selectbox("Selecciona el habitat a listar", nombreH)
-                animalesD = self.modelZoo.habitats[nombreH.index(habitat)].animales
+                st.selectbox("Selecciona el habitat a listar", nombreH)
 
-                if len(animalesD) == 0:
+                anima = []
+                for habitat in self.modelZoo.habitats:
+                    for animal in habitat.animales:
+                        anima.append(animal)
+
+                if len(anima) == 0:
                     self.mensajeError("No hay animales en este habitat")
                 else:
                     boton_accion = st.button("Listar animales")
                     if boton_accion:
-                        for animal in animalesD:
+                        for animal in anima:
                             st.write(f"ID: {animal.id}")
                             st.write(f"Nombre: {animal.nombre}")
                             st.write(f"Especie: {animal.especie}")
@@ -210,39 +225,44 @@ class vistaZoo():
              with st.container():
                 st.subheader("Realizar accion")
                 opciones = self.modelZoo.animalesHabitats()
-                identificador = st.selectbox("Selecciona un animal: ", opciones)
-                escogido = self.modelZoo.buscar(identificador)
+                st.selectbox("Selecciona un animal: ", opciones)
 
-                accion = st.selectbox("Seleccione una accion: ", "Dormir", "Comer", "Jugar")
+                anima = []
+                for habitat in self.modelZoo.habitats:
+                    for animal in habitat.animales:
+                        anima.append(animal)
+
+                accion = st.selectbox("Seleccione una accion: ", ["Dormir", "Comer", "Jugar"])
 
                 if accion == "Dormir":
-                    horas = st.number_input("Ingrese las horas que duerme el animal")
-                    if horas < 0:
-                        self.mensajeError("Las horas deben ser mayores a 0")
-                    elif horas > escogido.sueno:
-                        self.mensajeError("Se pasa de las horas permitidas")
-                    else:
-                        boton_accion = st.button("Dormir")
-                        if boton_accion:
-                            if escogido.sueno + horas <= escogido.hDormir:
-                                self.mensajeExitoso("El animal duerme")
-                                escogido.sueno += horas
-                            else:
-                                self.mensajeError("No puede dormir tanto")
+                    horas = st.slider("Ingrese las horas que duerme el animal", 0, 24)
+                    boton_accion = st.button("Dormir")
+
+                    if boton_accion:
+                         if animal.sueno + horas <= animal.hDormir:
+                            self.mensajeExitoso("El animal duerme")
+                            animal.sueno += horas
+                         else:
+                            self.mensajeError("No puede dormir tanto")
                 elif accion == "Comer":
-                    st.selectbox("Seleccione un alimento: ", self.modelZoo.dietas[escogido.dieta])
+                    st.selectbox("Seleccione un alimento: ", self.modelZoo.dietas[animal.dieta])
+                    porcion = st.slider("Ingrese la cantidad que le va a dar a el animal", 0, 20)
                     boton_accion = st.button("Comer")
                     if boton_accion:
-                        self.mensajeExitoso("El animal esta Comiendo")
+                        if animal.comido + porcion <= animal.cantidad:
+                            self.mensajeExitoso("El animal esta Comiendo")
+                            animal.comido += porcion
+                        else:
+                            self.mensajeError("El animal no puede comer tanto")
 
                 elif accion == "Jugar":
-                    if escogido.jugado:
+                    if animal.jugado:
                         self.mensajeError("El animal ya jugo hoy")
                     else:
                         boton_accion = st.button("Jugar")
                         if boton_accion:
                             self.mensajeExitoso("El animal esta jugando")
-                            escogido.jugado = False
+                            animal.jugado = True
 
 
 
@@ -253,10 +273,18 @@ class vistaZoo():
             tipo = st.selectbox("Selecciona el tipo de dieta", self.modelZoo.dietas)
             alimento = st.text_input("Ingresa el nombre del alimento")
 
-            boton_accion = st.button("Agregar comida")
+            repetido = 1
+            for nombreH in self.modelZoo.dietas[tipo]:
+                if nombreH == alimento:
+                    repetido = 0
+
+            boton_accion = st.button("Agregar alimento")
             if boton_accion:
-                self.modelZoo.agregarAlimento(alimento, tipo)
-                self.mensajeExitoso("Agregaste un alimento")
+                if repetido != 0:
+                    self.modelZoo.agregarAlimento(alimento, tipo)
+                    self.mensajeExitoso("Agregaste un alimento")
+                else:
+                    self.mensajeError("ya hay un alimento")
 
     def menu_eliminar_alimento(self):
 

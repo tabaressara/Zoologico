@@ -33,12 +33,6 @@ class Zoo:
         self.registro.remove(animal)
         st.session_state["registro"] = self.registro
 
-    def alimentoPermitido(self, alimento, tipo):
-        for i in range(len(self.dietas[tipo])):
-            if self.dietas[tipo][i] == alimento:
-                return i
-        return -1
-
     def agregarAlimento(self, alimento, tipo):
         self.dietas[tipo].append(alimento)
         st.session_state["dietas"] = self.dietas
@@ -47,32 +41,20 @@ class Zoo:
         self.dietas[tipo].remove(alimento)
         st.session_state["dietas"] = self.dietas
 
-    def repetidos(self, nombre):
-        for habitat in self.habitats:
-            if nombre == habitat.nombre:
-                return True
-
     def listarHabitats(self, nombre):
         for habitat in self.habitats:
             if habitat.nombre == nombre:
                 return habitat
-
     def listarAnimales(self):
         nombre = []
         for animal in self.registro:
             agregar = animal.nombre + " - " + animal.especie
             nombre.append(agregar)
         return nombre
-
     def animalesHabitats(self):
         lista = []
         for habitat in self.habitats:
             for animal in habitat.animales:
-                lista.append(animal.id)
+                lista.append(animal.nombre)
         return lista
 
-    def buscar(self, id):
-        for habitat in self.habitats:
-            for animal in habitat.animales:
-                if animal.id == id:
-                    return animal
