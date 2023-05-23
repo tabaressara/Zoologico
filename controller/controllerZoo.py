@@ -45,6 +45,11 @@ class controllerZoo():
                 self.eliminarAlimento()
             except ValueError:
                 self.vista.mensajeError("Hay un error para eliminar un alimento")
+        elif opcion == 8:
+            try:
+                self.mostrarApi()
+            except ValueError:
+                self.vista.mensajeError("Hay un error para mostrar la API")
 
     def crearAnimal(self):
         nuevo = self.vista.menu_crear_animal()
@@ -60,6 +65,9 @@ class controllerZoo():
 
     def añadirAnimal(self):
         self.vista.menu_añadir_animal()
+
+    def mostrarApi(self):
+        self.vista.api()
 
     def listar(self):
         self.vista.listar()

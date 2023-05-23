@@ -3,6 +3,7 @@ import models.Habitat as habitatModel
 import models.Animal as animalModel
 import controller.controllerZoo as zooController
 import streamlit as st
+import requests as rq
 
 class vistaZoo():
 
@@ -13,13 +14,13 @@ class vistaZoo():
 
         st.title("Bienvenido al zoologico")
 
-        tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["Agregar animal",
+        tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8= st.tabs(["Agregar animal",
                                                             "Agregar habitat",
                                                             "Agregar animal a habitat",
                                                             "Listar",
                                                             "Realizar accion",
                                                             "Agregar alimento",
-                                                            "Eliminar alimento"])
+                                                            "Eliminar alimento", "Mostrar API"])
 
         with tab1:
             st.header("Agregar un animal al zoologico")
@@ -42,6 +43,9 @@ class vistaZoo():
         with tab7:
             st.header("Eliminar alimento de dieta")
             botonQuitar = st.button("Eliminar alimento", key="botonEliminarAlimento")
+        with tab8:
+            st.header("Mostrar API")
+            botonMostrar = st.button("Eliminar alimento", key="botonMostrar")
 
         if botonAgregar:
             st.session_state["opcion"] = 1
@@ -57,6 +61,8 @@ class vistaZoo():
             st.session_state["opcion"] = 6
         elif botonQuitar:
             st.session_state["opcion"] = 7
+        elif botonMostrar:
+            st.session_state["opcion"] = 8
 
         if "opcion" in st.session_state:
             self.control.menu(st.session_state["opcion"])
@@ -266,8 +272,22 @@ class vistaZoo():
                 if boton_accion:
                     self.modelZoo.eliminarAlimento(alimento, tipo)
                     self.mensajeExitoso("Eliminaste un alimento")
-
     def mensajeExitoso(self, mensaje):
         st.success(mensaje)
     def mensajeError(self, mensaje):
         st.error(mensaje)
+
+    def api(self):
+
+        url = "https://pokeapi.co/api/v2/pokemon/"
+        buscar = st.text_input("Ingrese un numero")
+        boton_accion = st.button("Buscar")
+        busqueda = rq.get(url + buscar)
+        if boton_accion:
+            if busqueda.status_code == 200:
+                data = busqueda.json()
+                for dato, nombre in data.items():
+                    self.mensajeExitoso(dato)
+                    st.write(nombre)
+            else:
+                self.mensajeError("No se encontro la informacion")
